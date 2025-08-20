@@ -1,4 +1,6 @@
 #include <iostream>
+#include <memory>
+
 using namespace std;
 
 class Integer{
@@ -32,30 +34,37 @@ void Display(Integer *ptr){
     cout << *ptr->GetValue() << endl;
 
 }
+
+void Store(unique_ptr<Integer> &ptr){
+    cout << "Storing Data into file " << *ptr->GetValue() << endl;
+}
 Integer* GetPointer(int val){
     Integer *ptr = new Integer{val};
     return ptr;
 }
 
 void Operate(int val){
-    Integer* ptr = GetPointer(val);
+    // Integer* ptr = GetPointer(val);
+    unique_ptr<Integer> ptr{GetPointer(val)};
     if(ptr == nullptr){
-        ptr = new Integer{val};
+        ptr.reset(new Integer{val});
     }
     ptr->SetValue(val);
-    Display(ptr);
+    Display(ptr.get());
     
-    delete ptr;
+    // delete ptr;
     ptr = nullptr;
 
-    ptr = new Integer{};
+    ptr.reset(new Integer{});
     if(ptr){
         ptr->SetValue(__LINE__);
-        Display(ptr);
+        Display(ptr.get());
     }
 
-    delete ptr;
-    ptr = nullptr;
+    // delete ptr;
+    //ptr = nullptr;
+    // Store(move(ptr));
+    Store(ptr);
 
 }
 
